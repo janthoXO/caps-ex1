@@ -1,0 +1,17 @@
+meta {
+  name: Update Book
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{base_url}}/api/books/myid
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "newname"
+  }
+}

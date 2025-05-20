@@ -1,0 +1,22 @@
+meta {
+  name: Create Book
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/api/books
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "myid",
+    "title": "The book name",
+    "author": "The book author",
+    "pages": "1000",
+    "edition": "1st Edition",
+    "year": "1900"
+  }
+}

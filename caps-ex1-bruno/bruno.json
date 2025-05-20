@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "caps-ex1-bruno",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

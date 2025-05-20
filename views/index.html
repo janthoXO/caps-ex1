@@ -82,6 +82,25 @@
 </table>
 {{ end }}
 
+{{ block "author-list" . }}
+<ul>
+  {{ range . }}
+  <li>
+    <span>{{ . }}</span>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}
+
+{{ block "year-list" . }}
+<ul>
+  {{ range . }}
+  <li>
+    <span>{{ . }}</span>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}
 
 {{ block "search-bar" . }}
 <div class="input_wrap">
