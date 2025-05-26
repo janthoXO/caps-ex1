@@ -12,9 +12,9 @@ COPY . .
 # Set environment variables for cross-compilation
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-ENV GOARCH=amd64
+# We don't set GOARCH to allow for multi-architecture builds
 
-# Build the application
+# Build the application (will use the builder's architecture)
 RUN go build -o bookstore-app ./cmd/
 
 FROM gcr.io/distroless/base-debian12 AS build-release-stage

@@ -8,8 +8,6 @@ services:
     environment:
       - DB_URL=mongodb://mongodb:${DB_PORT}
       - DB_NAME=${DB_NAME}
-    networks:
-      - bookstore-network
     restart: unless-stopped
 
   mongodb:
@@ -20,13 +18,7 @@ services:
       - MONGO_INITDB_DATABASE=${DB_NAME}
     volumes:
       - mongodb-data:/data/db
-    networks:
-      - bookstore-network
     restart: unless-stopped
-
-networks:
-  bookstore-network:
-    driver: bridge
 
 volumes:
   mongodb-data:
