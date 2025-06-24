@@ -1,4 +1,4 @@
-name: docker build and push
+name: server docker build and push
 on:
   push:
     branches:
