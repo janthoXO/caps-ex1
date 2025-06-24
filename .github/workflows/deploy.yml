@@ -33,7 +33,7 @@ jobs:
             rm .env
             touch .env
             echo "DOMAIN=${{ vars.PUBLIC_IP }}.nip.io" >> .env
-            echo "SHARE_DB_USER=${{ secrets.DB_NAME }}" >> .env
+            echo "SHARE_DB_USER=${{ vars.DB_NAME }}" >> .env
 
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.0.3
