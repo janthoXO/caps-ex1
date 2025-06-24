@@ -1,6 +1,6 @@
 services:
   server:
-    image: ghcr.io/janthoxo/caps-ex1:main
+    image: ghcr.io/janthoxo/caps-ex1/server:main
     ports:
       - "8080:8080"
     depends_on:
@@ -22,7 +22,7 @@ services:
     restart: unless-stopped
 
   client:
-    image: ghcr.io/janthoxo/caps-ex1:main
+    image: ghcr.io/janthoxo/caps-ex1/client:main
     ports:
       - "3030:3030"
     environment:
