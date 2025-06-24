@@ -8,7 +8,7 @@ import (
 
 type Configuration struct {
 	Api struct {
-		Url      string `env:"API_URI,notEmpty"`
+		Url      string `env:"API_URI" envDefault:"http://server:8080"`
 	}
 	Server struct {
 		Port               uint   `env:"SERVER_PORT" envDefault:"3030"`
