@@ -17,9 +17,6 @@ jobs:
   docker-build-and-push:
     needs: build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
     permissions:
       contents: read
       packages: write
@@ -54,7 +51,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./client
+          file: ./client/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
