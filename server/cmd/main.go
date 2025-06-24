@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"html/template"
-	"io"
 	"net/http"
 	"slices"
 	"time"
@@ -61,37 +59,6 @@ func (b *BookStore) FromDTO(dto BookDTO) {
 	b.BookYear = dto.Year
 }
 
-// Wraps the "Template" struct to associate a necessary method
-// to determine the rendering procedure
-type Template struct {
-	tmpl *template.Template
-}
-
-// Preload the available templates for the view folder.
-// This builds a local "database" of all available "blocks"
-// to render upon request, i.e., replace the respective
-// variable or expression.
-// For more on templating, visit https://jinja.palletsprojects.com/en/3.0.x/templates/
-// to get to know more about templating
-// You can also read Golang's documentation on their templating
-// https://pkg.go.dev/text/template
-func loadTemplates() *Template {
-	return &Template{
-		tmpl: template.Must(template.ParseGlob("views/*.html")),
-	}
-}
-
-// Method definition of the required "Render" to be passed for the Rendering
-// engine.
-// Contraire to method declaration, such syntax defines methods for a given
-// struct. "Interfaces" and "structs" can have methods associated with it.
-// The difference lies that interfaces declare methods whether struct only
-// implement them, i.e., only define them. Such differentiation is important
-// for a compiler to ensure types provide implementations of such methods.
-func (t *Template) Render(w io.Writer, name string, data interface{}, ctx echo.Context) error {
-	return t.tmpl.ExecuteTemplate(w, name, data)
-}
-
 // Here we make sure the connection to the database is correct and initial
 // configurations exists. Otherwise, we create the proper database and collection
 // we will store the data.
@@ -134,22 +101,22 @@ func prepareDatabase(client *mongo.Client, dbName string, collecName string) (*m
 	}
 
 	// Create a composite unique index on name, author, year and pages
-    _, err = coll.Indexes().CreateOne(
-        context.TODO(),
-        mongo.IndexModel{
-            Keys: bson.D{
-                {Key: "bookname", Value: 1},
-                {Key: "bookauthor", Value: 1},
-                {Key: "bookyear", Value: 1},
-                {Key: "bookpages", Value: 1},
-            },
-            Options: options.Index().SetUnique(true),
-        },
-    )
-    if err != nil {
-        log.Fatal(err)
-        return nil, err
-    }
+	_, err = coll.Indexes().CreateOne(
+		context.TODO(),
+		mongo.IndexModel{
+			Keys: bson.D{
+				{Key: "bookname", Value: 1},
+				{Key: "bookauthor", Value: 1},
+				{Key: "bookyear", Value: 1},
+				{Key: "bookpages", Value: 1},
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
 
 	return coll, nil
 }
@@ -327,71 +294,9 @@ func main() {
 	// Here we prepare the server
 	e := echo.New()
 
-	// Define our custom renderer
-	e.Renderer = loadTemplates()
-
 	// Log the requests. Please have a look at echo's documentation on more
 	// middleware
 	e.Use(middleware.Logger())
-
-	e.Static("/css", "css")
-
-	// Endpoint definition. Here, we divided into two groups: top-level routes
-	// starting with /, which usually serve webpages. For our RESTful endpoints,
-	// we prefix the route with /api to indicate more information or resources
-	// are available under such route.
-	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", nil)
-	})
-
-	e.GET("/books", func(c echo.Context) error {
-		books, err := findAllBooks(coll)
-		if err != nil {
-			log.Error(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		var ret []map[string]interface{}
-		for _, res := range books {
-			ret = append(ret, map[string]interface{}{
-				"ID":          res.MongoID.Hex(),
-				"BookName":    res.BookName,
-				"BookAuthor":  res.BookAuthor,
-				"BookEdition": res.BookEdition,
-				"BookPages":   res.BookPages,
-			})
-		}
-
-		return c.Render(200, "book-table", ret)
-	})
-
-	e.GET("/authors", func(c echo.Context) error {
-		authors, err := findAllAuthors(coll)
-		if err != nil {
-			log.Error(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		return c.Render(200, "author-list", authors)
-	})
-
-	e.GET("/years", func(c echo.Context) error {
-		years, err := findAllYears(coll)
-		if err != nil {
-			log.Error(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		return c.Render(200, "year-list", years)
-	})
-
-	e.GET("/search", func(c echo.Context) error {
-		return c.Render(200, "search-bar", nil)
-	})
-
-	e.GET("/create", func(c echo.Context) error {
-		return c.NoContent(http.StatusNoContent)
-	})
 
 	// You will have to expand on the allowed methods for the path
 	// `/api/route`, following the common standard.
@@ -479,6 +384,26 @@ func main() {
 		}
 
 		return c.NoContent(http.StatusOK)
+	})
+
+	e.GET("/api/authors", func(c echo.Context) error {
+		authors, err := findAllAuthors(coll)
+		if err != nil {
+			log.Error(err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		return c.JSON(http.StatusOK, authors)
+	})
+
+	e.GET("/api/years", func(c echo.Context) error {
+		years, err := findAllYears(coll)
+		if err != nil {
+			log.Error(err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		return c.JSON(http.StatusOK, years)
 	})
 
 	// We start the server and bind it to port 3030. For future references, this

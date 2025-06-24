@@ -1,0 +1,32 @@
+name: build
+on: 
+  pull_request:
+    paths:
+      - server/**
+      - .github/workflows/server-build.yml
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Build
+        run: go build -v -o bookstore-app ./cmd/
+
+      # - name: Run tests
+      #   run: go test -v ./...

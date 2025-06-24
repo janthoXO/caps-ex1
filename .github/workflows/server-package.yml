@@ -3,17 +3,23 @@ on:
   push:
     branches:
       - main
+    paths:
+      - server/**
+      - .github/workflows/server-package.yml
   release:
     types:
       - released
 
 jobs:
   build:
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/server-build.yml
 
   docker-build-and-push:
     needs: build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
     permissions:
       contents: read
       packages: write

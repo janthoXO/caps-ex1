@@ -1,8 +1,6 @@
 services:
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: ghcr.io/janthoxo/caps-ex1:main
     ports:
       - "8080:8080"
     depends_on:
@@ -24,9 +22,7 @@ services:
     restart: unless-stopped
 
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    image: ghcr.io/janthoxo/caps-ex1:main
     ports:
       - "3030:3030"
     environment:

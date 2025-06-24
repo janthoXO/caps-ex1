@@ -7,9 +7,8 @@ import (
 )
 
 type Configuration struct {
-	Database struct {
-		Url      string `env:"DATABASE_URI,notEmpty"`
-		Name 	string `env:"DB_NAME" envDefault:"exercise-2"`
+	Api struct {
+		Url      string `env:"API_URI,notEmpty"`
 	}
 	Server struct {
 		Port               uint   `env:"SERVER_PORT" envDefault:"3030"`
